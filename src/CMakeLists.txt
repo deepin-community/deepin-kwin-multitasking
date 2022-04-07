@@ -1,12 +1,12 @@
-set(PLUGIN_NAME "multitasking")
 set(PLASMA_RELATIVE_DATA_INSTALL_DIR "plasma")
-
 set(KF5_DEP_VERSION "5.54.0") # handled by release scripts
 
 find_package(ECM 5.54.0  NO_MODULE)
 find_package(X11 REQUIRED)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
 
 find_package(KF5 ${KF5_DEP_VERSION} REQUIRED
     COMPONENTS
@@ -72,18 +72,42 @@ endif()
 configure_file(config-x11.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-x11.h)
 configure_file(config-plasma.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-plasma.h)
 
-find_package(Qt5Quick REQUIRED)
-find_package(Qt5QuickWidgets REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Core Quick QuickWidgets LinguistTools)
 find_package(KF5Config REQUIRED)
 find_package(KF5GlobalAccel REQUIRED)
 find_package(KF5I18n REQUIRED)
+find_package(KF5CoreAddons REQUIRED)
+find_package(KF5WindowSystem)
 find_package(PkgConfig REQUIRED)
-find_package(Qt5LinguistTools REQUIRED)
 
 pkg_search_module(QGSETTINGS REQUIRED IMPORTED_TARGET gsettings-qt)
 
-set(SRCS backgroundimageprovider.cpp imageprovider.cpp multitasking.cpp multitasking_model.cpp background.cpp
-    factory.cpp windowthumbnail.cpp thumbmanager.qml PlusButton.qml DesktopBackgroundImage.qml)
+get_target_property(QT_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE} IMPORTED_LOCATION)
+
+macro(query_qmake args output)
+    exec_program(${QT_QMAKE_EXECUTABLE} ARGS -query ${args} OUTPUT_VARIABLE ${output} RETURN_VALUE exitCode)
+
+    if(NOT ${exitCode} EQUAL 0)
+        message(FATAL_ERROR "exec ${QT_QMAKE_EXECUTABLE} failed, with args: ${args}, error message: ${output}")
+    endif()
+endmacro()
+
+query_qmake("QT_INSTALL_PLUGINS" QT_INSTALL_PLUGINS)
+set(PLUGIN_INSTALL_PATH ${QT_INSTALL_PLUGINS}/platforms)
+set(INSTALL_PATH "${QT_INSTALL_PLUGINS}/kwin/effects/plugins")
+
+set(SRCS 
+  backgroundimageprovider.cpp
+  imageprovider.cpp
+  multitasking.cpp
+  multitasking_model.cpp
+  background.cpp
+  factory.cpp
+  windowthumbnail.cpp
+  thumbmanager.qml
+  PlusButton.qml
+  DesktopBackgroundImage.qml
+)
 
 # translations
 file(GLOB TS LIST_DIRECTORIES false translations/${PLUGIN_NAME}*.ts)

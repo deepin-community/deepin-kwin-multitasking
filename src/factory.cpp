@@ -21,7 +21,19 @@
 
 #include "multitasking.h"
 
-KWIN_EFFECT_FACTORY_SUPPORTED(MultitaskingEffect, "multitasking.json", return true;)
-K_EXPORT_PLUGIN_VERSION(KWIN_EFFECT_API_VERSION)
+class MultitaskingPluginFactory : public KWin::EffectPluginFactory
+{
+    Q_OBJECT
+    Q_INTERFACES(KPluginFactory)
+    Q_PLUGIN_METADATA(IID EffectPluginFactory_iid FILE "multitasking.json")
+
+public:
+    explicit MultitaskingPluginFactory() {}
+    ~MultitaskingPluginFactory() {}
+
+    KWin::Effect *createEffect() const override {
+        return new MultitaskingEffect;
+    }
+};
 
 #include "factory.moc"

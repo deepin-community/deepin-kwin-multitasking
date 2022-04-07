@@ -38,7 +38,7 @@
 
 #include "multitasking.h"
 #include "multitasking_model.h"
-#include "../../../accessible.h"
+#include "accessible.h"
 
 const QString actionName = "ShowMultitasking";
 
@@ -565,7 +565,7 @@ void MultitaskingEffect::reconfigure(ReconfigureFlags)
 }
 
 // Screen painting
-void MultitaskingEffect::prePaintScreen(ScreenPrePaintData &data, TimeArgType time)
+void MultitaskingEffect::prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds time)
 {
     //EffectWindow of m_multitaskingView changes every time when
     //multitaskingView show, we need to set EffectWindow before paintwindow
@@ -580,11 +580,7 @@ void MultitaskingEffect::prePaintScreen(ScreenPrePaintData &data, TimeArgType ti
     effects->prePaintScreen(data, time);
 }
 
-#if KWIN_VERSION_MIN > 17 || (KWIN_VERSION_MIN == 17 && KWIN_VERSION_PAT > 5)
 void MultitaskingEffect::paintScreen(int mask, const QRegion &region, ScreenPaintData &data)
-#else
-void MultitaskingEffect::paintScreen(int mask, QRegion region, ScreenPaintData &data)
-#endif
 {
     effects->paintScreen(mask, region, data);
 }
@@ -599,7 +595,7 @@ void MultitaskingEffect::postPaintScreen()
 
 
 // Window painting
-void MultitaskingEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, TimeArgType time)
+void MultitaskingEffect::prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds time)
 {
     if (m_multitaskingView && multitaskingViewEffectWindow()
         && w == multitaskingViewEffectWindow()) {

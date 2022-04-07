@@ -35,7 +35,6 @@
 #include <kwineffects.h>
 #include <KF5/KWindowSystem/KWindowSystem>
 
-#include "kwinutils.h"
 #include "background.h"
 #include "constants.h"
 
@@ -256,16 +255,12 @@ public:
     virtual void reconfigure(ReconfigureFlags) override;
 
     // Screen painting
-    virtual void prePaintScreen(ScreenPrePaintData &data, TimeArgType time) override;
-#if KWIN_VERSION_MIN > 17 || (KWIN_VERSION_MIN == 17 && KWIN_VERSION_PAT > 5)
+    virtual void prePaintScreen(ScreenPrePaintData &data, std::chrono::milliseconds time) override;
     virtual void paintScreen(int mask, const QRegion &region, ScreenPaintData &data) override;
-#else
-    virtual void paintScreen(int mask, QRegion region, ScreenPaintData &data) override;
-#endif
     virtual void postPaintScreen() override;
 
     // Window painting
-    virtual void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, TimeArgType time) override;
+    virtual void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, std::chrono::milliseconds time) override;
     virtual void paintWindow(EffectWindow *w, int mask, QRegion region, WindowPaintData &data) override;
 
     // User interaction
